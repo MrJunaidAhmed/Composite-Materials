@@ -30,16 +30,14 @@ K_1 = zeros(A , 1);
 G_hom_ratio = zeros(A , B);
 K_hom_ratio = zeros(A , B);
 
-tempK = 0;
-tempG = 0;
-
 for i = 1 : A
     E_1(i) = SC(i)*E_0;
     G_1(i) = E_1(i) / (2*(1+nu_1));
     K_1(i) = E_1(i) / (3*(1-2*nu_1));
     
     for j = 1 : B
-        N = v_1(j) / del_v1;
+        v_1(j);
+        N = round(v_1(j) / del_v1);
         K_hom = zeros(N , 1);
         G_hom = zeros(N , 1);
         K_hom(1) = K_0;
@@ -54,11 +52,14 @@ for i = 1 : A
             G_frac = (1 - del_v1) * (1 + 2*G_S(k-1)*( (G_1(i)/G_hom(k-1)) - 1 ));
             K_hom(k) = K_hom(k-1) * ( ( del_v1 * (K_1(i) / K_hom(k-1)) + K_frac ) / ( del_v1 + K_frac ) );
             G_hom(k) = G_hom(k-1) * ( ( del_v1 * (G_1(i) / G_hom(k-1)) + G_frac ) / ( del_v1 + G_frac ) );
-            tempK = K_hom(k);
-            tempG = G_hom(k);
         end
-        K_hom_ratio(j,i) = tempK / K_0;
-        G_hom_ratio(j,i) = tempG / G_0;
+        if N == 0
+            K_hom_ratio(j,i) = 1;
+            G_hom_ratio(j,i) = 1;
+        else
+            K_hom_ratio(j,i) = K_hom(N) / K_0;
+            G_hom_ratio(j,i) = G_hom(N) / G_0;
+        end
     end
 end
 
@@ -77,6 +78,3 @@ xlabel('Inclusions Volume Fraction %')
 ylabel('Normalized Effective Bulk Modulus')
 legend({'E1/E0=100','E1/E0=50','E1/E0=20','E1/E0=10','E1/E0=5','E1/E0=0'})
 grid on
-
-%K_hom_ratio
-%G_hom_ratio
